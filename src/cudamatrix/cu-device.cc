@@ -569,28 +569,9 @@ void CuDevice::PrintProfile() {
 void CuDevice::DeviceGetName(char* name, int32 len, int32 dev) {
   // prefill with something reasonable
   strncpy(name,"Unknown GPU",len);
-#ifdef _MSC_VER
+
   cuDeviceGetName(name, len, dev);
-#else
-  // open libcuda.so
-  void* libcuda = dlopen("libcuda.so",RTLD_LAZY);
-  if (NULL == libcuda) {
-    KALDI_WARN << "cannot open libcuda.so";
-  } else {
-    // define the function signature type
-    typedef CUresult (*cu_fun_ptr)(char*,int,CUdevice);
-    // get the symbol
-    cu_fun_ptr cuDeviceGetName_ptr = (cu_fun_ptr)dlsym(libcuda,"cuDeviceGetName");
-    if (NULL == cuDeviceGetName_ptr) {
-      KALDI_WARN << "cannot load cuDeviceGetName from libcuda.so";
-    } else {
-      // call the function
-      cuDeviceGetName_ptr(name, len, dev);
-    }
-    // close the library
-    dlclose(libcuda);
-  }
-#endif
+
 }
 
 
